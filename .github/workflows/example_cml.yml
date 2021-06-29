@@ -20,7 +20,7 @@ jobs:
   model-training:
     needs: [deploy-runner]
     runs-on: [self-hosted, cml-runner]
-    container: docker://dvcorg/cml:0-dvc2-base1-gpu
+    container: docker://mirekphd/ml-gpu-py38-cuda101-cust:latest
     steps:
       - uses: actions/checkout@v2
       - name: Train model
