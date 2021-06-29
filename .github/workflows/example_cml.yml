@@ -35,9 +35,7 @@ jobs:
   model-training:
     needs: [deploy-runner]
     runs-on: [self-hosted, cml-runner]
-    container: 
-      image: docker://dvcorg/cml
-      options: --gpus all
+    container: docker://dvcorg/cml-py3
     steps:
       - uses: actions/checkout@v2
       - name: Train model
