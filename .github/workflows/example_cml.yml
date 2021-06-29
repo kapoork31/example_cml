@@ -1,7 +1,22 @@
 name: Train-in-the-cloud
 on: [push]
 jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Python 3
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run tests with pytest
+        run: pytest
   deploy-runner:
+    needs: test-job
     runs-on: [ubuntu-latest]
     steps:
       - uses: iterative/setup-cml@v1
@@ -20,7 +35,9 @@ jobs:
   model-training:
     needs: [deploy-runner]
     runs-on: [self-hosted, cml-runner]
-    container: docker://dvcorg/cml:0-dvc2-base1-gpu
+    container: 
+      image: docker://dvcorg/cml
+      options: --gpus all
     steps:
       - uses: actions/checkout@v2
       - name: Train model
