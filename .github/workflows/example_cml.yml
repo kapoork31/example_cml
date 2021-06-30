@@ -1,47 +1,42 @@
-name: train-my-model
-
+name: Train-in-the-cloud
 on: [push]
-
 jobs:
   deploy-runner:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
-
       - uses: iterative/setup-cml@v1
-
-      - name: deploy
-        shell: bash
+      - uses: actions/checkout@v2
+      - name: Deploy runner on EC2
         env:
-          repo_token: ${{ secrets.ACCESS_TOKEN }}
+          REPO_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           cml-runner \
-          --cloud aws \
-          --cloud-region us-west \
-          --cloud-type=t2.micro \
-          --labels=cml-runner
-  run:
-    needs: deploy-runner
-    runs-on: [self-hosted,cml-runner]
-    container: docker://dvcorg/cml
-
+              --cloud aws \
+              --cloud-region eu-west-1 \
+              --cloud-type=t2.micro \
+              --labels=cml-runner
+  model-training:
+    needs: [deploy-runner]
+    runs-on: [self-hosted, cml-runner]
+    container: docker://kapoork31/cml_test:latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - name: Train model
+        env:
+          REPO_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
+        run: |
+          npm i @dvcorg/cml
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          python train.py
+          echo "## confusion Matrix" >> report.md
+          npx cml-publish confusion_matrix.png --md >> report.md
+          echo "## metrics" >> report.md
+          cat metrics.txt >> report.md
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.6'
-
-    - name: cml
-      env:
-        repo_token: ${{ secrets.ACCESS_TOKEN }}
-      run: |
-        python --version
-        pip install -r requirements.txt
-        python train.py
-        echo "## Report from your EC2 Instance" > report.md
-        cat metrics.txt >> report.md
-        cml-publish "confusion_matrix.png" --md >> report.md
-        cml-send-comment report.md
+          npx cml-send-comment report.md
