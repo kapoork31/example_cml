@@ -20,7 +20,7 @@ jobs:
   model-training:
     needs: [deploy-runner]
     runs-on: [self-hosted, cml-runner]
-    container: docker://akasharvind/pythonml:latest
+    container: docker://kapoork31/cml_test:latest
     steps:
       - uses: actions/checkout@v2
       - name: Train model
@@ -30,8 +30,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip3 install --upgrade pip
+          pip3 install -r requirements.txt
           python train.py
           echo "## confusion Matrix" >> report.md
           cml-publish confusion_matrix.png --md >> report.md
