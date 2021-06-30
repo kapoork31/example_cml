@@ -30,9 +30,9 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
         run: |
-          pip3 install --upgrade pip
-          pip3 install -r requirements.txt
-          python3 train.py
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          python train.py
           echo "## confusion Matrix" >> report.md
           npx cml-publish confusion_matrix.png --md >> report.md
           echo "## metrics" >> report.md
