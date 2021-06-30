@@ -32,10 +32,10 @@ jobs:
         run: |
           pip3 install --upgrade pip
           pip3 install -r requirements.txt
-          python train.py
+          python3 train.py
           echo "## confusion Matrix" >> report.md
-          cml-publish confusion_matrix.png --md >> report.md
+          npx cml-publish confusion_matrix.png --md >> report.md
           echo "## metrics" >> report.md
           cat metrics.txt >> report.md
 
-          cml-send-comment report.md
+          npx cml-send-comment report.md
