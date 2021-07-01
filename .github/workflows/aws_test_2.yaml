@@ -1,10 +1,8 @@
 name: workflow
 on:
   push:
-    branches: [aws-development-tests]
   pull_request:
     branches: [master]
-    types: [opened]
 
 jobs:
   deploy:
