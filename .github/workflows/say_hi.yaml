@@ -1,4 +1,4 @@
-name: Manually triggered workflow # this type of workflow only runs if the user explicitly tells it to do so
+name: Manually triggered workflow to say 'hi' # this type of workflow only runs if the user explicitly tells it to do so
 on:
   workflow_dispatch:
     inputs:

@@ -1,6 +1,6 @@
-name: workflow
+name: Running Actions on open PRs to master
 on:
-  pull_request:
+  pull_request: # this runs actions on open pull requests to master
     branches: [master]
 
 jobs:
