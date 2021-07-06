@@ -1,0 +1,58 @@
+name: Manually triggered workflow to say deploy training job # this type of workflow only runs if the user explicitly tells it to do so
+on:
+  workflow_dispatch:
+    inputs:
+      cloud_service:
+        description: 'Cloud service to run on (eg: aws / Azure, gcp etc.)'
+        required: true
+        default: 'aws'
+      trigger:
+        description: 'The github trigger on which to start the action (eg: commit / push / PR etc.)'
+        required: false
+        default: 'push'
+
+jobs:
+  deploy-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: iterative/setup-cml@v1
+      - uses: actions/checkout@v2
+      - name: Deploy runner on EC2
+        env:
+          REPO_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        # this reads from the input and 
+        run: |
+          cml-runner \
+              --cloud ${{ github.event.inputs.cloud_service }} \ 
+              --cloud-region eu-west-1 \
+              --cloud-type=t2.micro \
+              --labels=cml-runner
+  model-training:
+    needs: [deploy-runner]
+    runs-on: [self-hosted, cml-runner]
+    container: docker://dvcorg/cml:0-dvc2-base1-gpu
+    steps:
+      - uses: actions/checkout@v2
+      - name: Train model
+        env:
+          REPO_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
+        run: |
+          pip install -r requirements.txt
+          python train.py
+          echo "## confusion Matrix" >> report.md
+          cml-publish confusion_matrix.png --md >> report.md
+          echo "## metrics" >> report.md
+          cat metrics.txt >> report.md
+          cml-send-comment report.md
+
+  # say_hello:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: |
+  #         echo "Deploying on ${{ github.event.inputs.cloud_service }}!"
+  #         echo "Starting from ${{ github.event.inputs.trigger }}!"
