@@ -18,7 +18,7 @@ MLFLOW_URL = os.getenv('MLFLOW_URL')
 with dvc.api.open(
     'data_folder/iris.csv',
     repo=url,
-    rev='master'
+    rev='dvc_branch'
 ) as fd:
     data = pd.read_csv(fd)
     # fd is a file descriptor which can be processed normally
