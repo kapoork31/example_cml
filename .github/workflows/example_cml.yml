@@ -15,7 +15,7 @@ jobs:
           pip install pytest
           pip install flake8
       - name: Run tests with pytest
-        run: pytest
+        run: python -m unittest
   deploy-runner:
     needs: test-job
     runs-on: [ubuntu-latest]
@@ -49,7 +49,7 @@ jobs:
           npm i @dvcorg/cml
           pip install --upgrade pip
           pip install -r requirements.txt
-          python -m train
+          python -m src.train
           echo "## confusion Matrix" >> report.md
           npx cml-publish confusion_matrix.png --md >> report.md
           echo "## metrics" >> report.md
