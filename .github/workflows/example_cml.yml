@@ -48,7 +48,7 @@ jobs:
           MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
         run: |
           pip install -r requirements.txt
-          python train.py
+          python -m src.train
           echo "## confusion Matrix" >> report.md
           cml-publish confusion_matrix.png --md >> report.md
           echo "## metrics" >> report.md
