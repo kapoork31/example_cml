@@ -1,7 +1,10 @@
+# bash script 
+
 name: Manually triggered workflow to say deploy training job # this type of workflow only runs if the user explicitly tells it to do so
 on:
   workflow_dispatch:
     inputs:
+    # remove
       cloud_service:
         description: 'Cloud service to run on (eg: aws / Azure, gcp etc.)'
         required: true
@@ -10,6 +13,7 @@ on:
         description: 'The github trigger on which to start the action (eg: commit / push / PR etc.)'
         required: false
         default: 'push'
+        # add instance type parameter
 
 jobs:
   deploy-runner:
@@ -25,14 +29,14 @@ jobs:
         # this reads from the input and 
         run: |
           cml-runner \
-              --cloud ${{ github.event.inputs.cloud_service }} \ 
+              --cloud aws \
               --cloud-region eu-west-1 \
               --cloud-type=t2.micro \
               --labels=cml-runner
   model-training:
     needs: [deploy-runner]
     runs-on: [self-hosted, cml-runner]
-    container: docker://dvcorg/cml:0-dvc2-base1-gpu
+    container: docker://dvcorg/cml:0-dvc2-base1-gpu # recommended
     steps:
       - uses: actions/checkout@v2
       - name: Train model
