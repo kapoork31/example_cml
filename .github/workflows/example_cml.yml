@@ -22,7 +22,7 @@ jobs:
           cml-runner \
               --cloud aws \
               --cloud-region eu-west-1 \
-              --cloud-type=t2.micro \
+              --cloud-type=t2.large \
               --labels=cml-runner
   model-training:
     needs: [deploy-runner]
@@ -38,3 +38,4 @@ jobs:
           MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
         run: |
           pip install pipenv
+          pipenv install
