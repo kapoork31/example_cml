@@ -38,4 +38,3 @@ jobs:
           MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
         run: |
           pip install pipenv
-          pipenv install
