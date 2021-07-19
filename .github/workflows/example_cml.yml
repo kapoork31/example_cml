@@ -22,7 +22,7 @@ jobs:
           cml-runner \
               --cloud aws \
               --cloud-region eu-west-1 \
-              --cloud-type=t2.micro \
+              --cloud-type=m5.xlarge \
               --labels=cml-runner
   model-training:
     needs: [deploy-runner]
