@@ -39,3 +39,9 @@ jobs:
         run: |
           pip install pipenv
           pipenv install
+          pipenv run python -m src.train
+          echo "## confusion Matrix" >> report.md
+          cml-publish confusion_matrix.png --md >> report.md
+          echo "## metrics" >> report.md
+          cat metrics.txt >> report.md
+          cml-send-comment report.md
