@@ -22,12 +22,12 @@ jobs:
           cml-runner \
               --cloud aws \
               --cloud-region eu-west-1 \
-              --cloud-type=t2.large \
+              --cloud-type=t2.micro \
               --labels=cml-runner
   model-training:
     needs: [deploy-runner]
     runs-on: [self-hosted, cml-runner]
-    container: docker://dvcorg/cml:0-dvc2-base1-gpu # recommended
+    container: kapoork31/cml_test:latest # recommended
     steps:
       - uses: actions/checkout@v2
       - name: Train model
@@ -38,5 +38,4 @@ jobs:
           MLFLOW_URL: ${{ secrets.MLFLOW_URL }}
         run: |
           pip install pipenv
-          ls
           pipenv install
