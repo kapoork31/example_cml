@@ -16,8 +16,8 @@ jobs:
       - name: Deploy runner on EC2
         env:
           REPO_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CML_TRAINING_AWS_ACCESS_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CML_TRAINING_SECRET }}
         run: |
           cml-runner \
               --cloud aws \
